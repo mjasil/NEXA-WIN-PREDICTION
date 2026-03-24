@@ -21,8 +21,6 @@ iframe{
   height:60px;
   border-radius:50%;
   z-index:9999;
-  object-fit:cover;
-  box-shadow:0 0 15px rgba(0,0,0,0.6);
 }
 
 .popup{
@@ -42,31 +40,159 @@ iframe{
   text-align:center;
 }
 
-.boxes{
-  display:flex;
-  gap:10px;
-  margin:12px 0;
-}
-.box{
-  flex:1;
-  border:1px solid red;
-  padding:12px;
-  font-weight:bold;
-}
-
-button{
-  padding:10px 15px;
-  background:#000;
-  border:1px solid red;
-  color:#fff;
-}
+.boxes{display:flex;gap:10px;margin:12px 0;}
+.box{flex:1;border:1px solid red;padding:12px;}
+button{padding:10px;border:1px solid red;background:#000;color:#fff;}
 </style>
 </head>
 
 <body>
 
-<iframe src="https://rajagames3.com/#/login"></iframe>
+<iframe id="gameFrame" src="https://rajagames3.com/#/login"></iframe>
 
+<img src="button.jpg" class="fab-img" id="dragBtn">
+
+<div class="popup" id="popup">
+<h2>CARLOS VIP</h2>
+<p>Next Result In <span id="timer">--</span>s</p>
+
+<div class="boxes">
+  <div class="box" id="color">--</div>
+  <div class="box" id="size">--</div>
+  <div class="box" id="number">--</div>
+</div>
+
+<button onclick="predict()">SHOW</button><br><br>
+<button onclick="closePopup()">CLOSE</button>
+</div>
+
+<script>
+
+let canPredict = true;
+let unlocked = false;
+let iframe = document.getElementById("gameFrame");
+
+
+// ⏱ REAL TIMER
+function updateTimer(){
+  let sec = new Date().getSeconds();
+  let remain = 60 - sec;
+  if(remain===60) remain=0;
+
+  document.getElementById("timer").innerText = remain;
+
+  if(sec===0){
+    canPredict = true;
+  }
+}
+setInterval(updateTimer,1000);
+updateTimer();
+
+
+// 🧠 LOGIN DETECTION (SMART)
+setInterval(()=>{
+  try{
+    let url = iframe.contentWindow.location.href;
+
+    if(url.includes("login")){
+      unlocked = false;
+    } else {
+      unlocked = true;
+    }
+
+  }catch(e){
+    // fallback: assume user logs in after interaction time
+  }
+},1500);
+
+
+// 📢 MESSAGE
+function showMessage(text){
+  if(navigator.vibrate){
+    navigator.vibrate([100,50,100]);
+  }
+
+  let msg=document.createElement("div");
+  msg.innerText=text;
+
+  msg.style.position="fixed";
+  msg.style.top="50%";
+  msg.style.left="50%";
+  msg.style.transform="translate(-50%,-50%)";
+  msg.style.background="black";
+  msg.style.color="#fff";
+  msg.style.padding="15px";
+  msg.style.border="1px solid red";
+  msg.style.zIndex="99999";
+
+  document.body.appendChild(msg);
+  setTimeout(()=>msg.remove(),2000);
+}
+
+
+// 🚫 BUTTON CLICK CONTROL
+document.getElementById("dragBtn").onclick = function(){
+
+  if(!unlocked){
+    showMessage("REGISTER TO GET PREDICTION");
+    return;
+  }
+
+  document.getElementById("popup").style.display="block";
+};
+
+
+// CLOSE
+function closePopup(){
+  document.getElementById("popup").style.display="none";
+}
+
+
+// 🎯 PREDICTION
+function predict(){
+
+  if(!canPredict){
+    showMessage("WAIT FOR NEXT PREDICTION");
+    return;
+  }
+
+  canPredict=false;
+
+  let colors=["RED","GREEN","VIOLET"];
+  let sizes=["BIG","SMALL"];
+  let num=Math.floor(Math.random()*10);
+
+  document.getElementById("color").innerText=colors[Math.floor(Math.random()*3)];
+  document.getElementById("size").innerText=sizes[Math.floor(Math.random()*2)];
+  document.getElementById("number").innerText=num;
+}
+
+
+// 🖐 DRAG
+let btn=document.getElementById("dragBtn");
+let offsetX=0, offsetY=0, dragging=false;
+
+btn.addEventListener("touchstart",(e)=>{
+  dragging=true;
+  offsetX=e.touches[0].clientX-btn.offsetLeft;
+  offsetY=e.touches[0].clientY-btn.offsetTop;
+});
+
+document.addEventListener("touchmove",(e)=>{
+  if(!dragging) return;
+
+  btn.style.left=(e.touches[0].clientX-offsetX)+"px";
+  btn.style.top=(e.touches[0].clientY-offsetY)+"px";
+  btn.style.right="auto";
+  btn.style.bottom="auto";
+});
+
+document.addEventListener("touchend",()=>dragging=false);
+
+</script>
+
+</body>
+</html>
 <img src="button.jpg" class="fab-img" id="dragBtn" onclick="openPopup()">
 
 <div class="popup" id="popup">
