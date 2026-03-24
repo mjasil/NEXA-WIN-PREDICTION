@@ -86,6 +86,174 @@ button{
 
 </div>
 
+<!-- LOGIN BUTTON -->
+<button onclick="unlockApp()" style="
+position:fixed;
+top:20px;
+left:20px;
+z-index:9999;
+padding:8px;
+background:#000;
+color:#fff;
+border:1px solid red;
+">
+LOGIN DONE
+</button>
+
+<script>
+
+let canPredict = true;
+let unlocked = false;
+
+
+// REAL TIME TIMER
+function updateTimer(){
+  let now = new Date();
+  let sec = now.getSeconds();
+  let remain = 60 - sec;
+  if(remain === 60) remain = 0;
+
+  document.getElementById("timer").innerText = remain;
+
+  if(sec === 0){
+    canPredict = true;
+  }
+}
+setInterval(updateTimer,1000);
+updateTimer();
+
+
+// POPUP
+function openPopup(){
+  document.getElementById("popup").style.display="block";
+}
+function closePopup(){
+  document.getElementById("popup").style.display="none";
+}
+
+
+// MESSAGE + VIBRATION
+function showMessage(text){
+
+  if(navigator.vibrate){
+    navigator.vibrate([100,50,100]);
+  }
+
+  let msg = document.createElement("div");
+
+  msg.innerText = text;
+  msg.style.position = "fixed";
+  msg.style.top = "50%";
+  msg.style.left = "50%";
+  msg.style.transform = "translate(-50%,-50%)";
+  msg.style.background = "rgba(0,0,0,0.9)";
+  msg.style.color = "#fff";
+  msg.style.padding = "15px 25px";
+  msg.style.border = "1px solid red";
+  msg.style.borderRadius = "10px";
+  msg.style.zIndex = "99999";
+  msg.style.fontWeight = "bold";
+  msg.style.boxShadow = "0 0 20px red";
+
+  document.body.appendChild(msg);
+
+  setTimeout(()=>{ msg.remove(); },2000);
+}
+
+
+// FINAL FIXED PREDICTION
+function predict(){
+
+  // 🔒 ALWAYS BLOCK IF NOT LOGIN
+  if(!unlocked){
+    showMessage("REGISTER TO GET PREDICTION");
+
+    // reset boxes (extra safety)
+    document.getElementById("color").innerText="--";
+    document.getElementById("size").innerText="--";
+    document.getElementById("number").innerText="--";
+
+    return;
+  }
+
+  // ⏱ WAIT SYSTEM
+  if(!canPredict){
+    showMessage("WAIT FOR NEXT PREDICTION");
+    return;
+  }
+
+  canPredict = false;
+
+  let colors=["RED","GREEN","VIOLET"];
+  let sizes=["BIG","SMALL"];
+  let num=Math.floor(Math.random()*10);
+
+  let c=colors[Math.floor(Math.random()*3)];
+  let s=sizes[Math.floor(Math.random()*2)];
+
+  document.getElementById("color").innerText=c;
+  document.getElementById("size").innerText=s;
+  document.getElementById("number").innerText=num;
+}
+
+
+// LOGIN
+function unlockApp(){
+  unlocked = true;
+  canPredict = true; // allow immediately
+  showMessage("PREDICTION UNLOCKED");
+}
+
+
+// DRAG BUTTON
+let btn=document.getElementById("dragBtn");
+let offsetX=0, offsetY=0, dragging=false;
+
+btn.addEventListener("touchstart",(e)=>{
+  dragging=true;
+  offsetX=e.touches[0].clientX-btn.offsetLeft;
+  offsetY=e.touches[0].clientY-btn.offsetTop;
+});
+
+document.addEventListener("touchmove",(e)=>{
+  if(!dragging) return;
+
+  let x=e.touches[0].clientX-offsetX;
+  let y=e.touches[0].clientY-offsetY;
+
+  btn.style.left=x+"px";
+  btn.style.top=y+"px";
+  btn.style.right="auto";
+  btn.style.bottom="auto";
+});
+
+document.addEventListener("touchend",()=>{
+  dragging=false;
+});
+
+</script>
+
+</body>
+</html>
+<img src="button.jpg" class="fab-img" id="dragBtn" onclick="openPopup()">
+
+<div class="popup" id="popup">
+
+<h2>CARLOS VIP</h2>
+<p>Next Result In <span id="timer">--</span>s</p>
+
+<div class="boxes">
+  <div class="box" id="color">--</div>
+  <div class="box" id="size">--</div>
+  <div class="box" id="number">--</div>
+</div>
+
+<button onclick="predict()">SHOW</button>
+<br><br>
+<button onclick="closePopup()">CLOSE</button>
+
+</div>
+
 <!-- TEMP LOGIN BUTTON -->
 <button onclick="unlockApp()" style="
 position:fixed;
