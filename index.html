@@ -98,6 +98,158 @@ button{
 
 let time = 60;
 let canPredict = true;
+let unlocked = false; // LOGIN STATE
+
+// TIMER
+setInterval(()=>{
+  time--;
+
+  if(time <= 0){
+    time = 60;
+    canPredict = true;
+  }
+
+  document.getElementById("timer").innerText = time;
+
+},1000);
+
+
+// OPEN/CLOSE
+function openPopup(){
+  document.getElementById("popup").style.display="block";
+}
+function closePopup(){
+  document.getElementById("popup").style.display="none";
+}
+
+
+// CENTER MESSAGE
+function showMessage(text){
+
+  let msg = document.createElement("div");
+
+  msg.innerText = text;
+
+  msg.style.position = "fixed";
+  msg.style.top = "50%";
+  msg.style.left = "50%";
+  msg.style.transform = "translate(-50%,-50%)";
+  msg.style.background = "rgba(0,0,0,0.9)";
+  msg.style.color = "#fff";
+  msg.style.padding = "15px 25px";
+  msg.style.border = "1px solid red";
+  msg.style.borderRadius = "10px";
+  msg.style.zIndex = "99999";
+  msg.style.fontWeight = "bold";
+  msg.style.boxShadow = "0 0 20px red";
+
+  document.body.appendChild(msg);
+
+  setTimeout(()=>{
+    msg.remove();
+  },2000);
+}
+
+
+// PREDICTION
+function predict(){
+
+  // LOGIN CHECK
+  if(!unlocked){
+    showMessage("REGISTER TO GET PREDICTION");
+    return;
+  }
+
+  // MULTI CLICK BLOCK
+  if(!canPredict){
+    showMessage("WAIT FOR NEXT PREDICTION");
+    return;
+  }
+
+  canPredict = false;
+
+  let colors = ["RED","GREEN","VIOLET"];
+  let sizes = ["BIG","SMALL"];
+  let num = Math.floor(Math.random()*10);
+
+  let c = colors[Math.floor(Math.random()*3)];
+  let s = sizes[Math.floor(Math.random()*2)];
+
+  document.getElementById("color").innerText = c;
+  document.getElementById("size").innerText = s;
+  document.getElementById("number").innerText = num;
+
+}
+
+
+// SIMULATE LOGIN AFTER 5s
+setTimeout(()=>{
+  unlocked = true;
+},5000);
+
+
+// DRAG BUTTON
+let btn = document.getElementById("dragBtn");
+
+let offsetX = 0, offsetY = 0, isDragging = false;
+
+btn.addEventListener("touchstart", function(e){
+  isDragging = true;
+  offsetX = e.touches[0].clientX - btn.offsetLeft;
+  offsetY = e.touches[0].clientY - btn.offsetTop;
+});
+
+document.addEventListener("touchmove", function(e){
+  if(!isDragging) return;
+
+  let x = e.touches[0].clientX - offsetX;
+  let y = e.touches[0].clientY - offsetY;
+
+  btn.style.left = x + "px";
+  btn.style.top = y + "px";
+  btn.style.right = "auto";
+  btn.style.bottom = "auto";
+});
+
+document.addEventListener("touchend", function(){
+  isDragging = false;
+});
+
+</script>
+
+</body>
+</html></head>
+
+<body>
+
+<!-- WEBSITE -->
+<iframe src="https://rajagames3.com/#/login"></iframe>
+
+<!-- DRAGGABLE IMAGE BUTTON -->
+<img src="button.jpg" class="fab-img" id="dragBtn" onclick="openPopup()">
+
+<!-- POPUP -->
+<div class="popup" id="popup">
+
+<h2>CARLOS VIP</h2>
+<p>Next Result In <span id="timer">60</span>s</p>
+
+<div class="boxes">
+  <div class="box" id="color">--</div>
+  <div class="box" id="size">--</div>
+  <div class="box" id="number">--</div>
+</div>
+
+<button onclick="predict()">SHOW</button>
+<br><br>
+<button onclick="closePopup()">CLOSE</button>
+
+</div>
+
+<script>
+
+let time = 60;
+let canPredict = true;
 
 // TIMER
 setInterval(()=>{
