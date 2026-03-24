@@ -7,14 +7,12 @@
 <style>
 body{margin:0;background:#000;font-family:sans-serif;}
 
-/* WEBSITE */
 iframe{
   width:100%;
   height:100vh;
   border:none;
 }
 
-/* DRAG BUTTON */
 .fab-img{
   position:fixed;
   bottom:80px;
@@ -27,7 +25,6 @@ iframe{
   box-shadow:0 0 15px rgba(0,0,0,0.6);
 }
 
-/* POPUP */
 .popup{
   position:fixed;
   top:60px;
@@ -45,7 +42,6 @@ iframe{
   text-align:center;
 }
 
-/* BOXES */
 .boxes{
   display:flex;
   gap:10px;
@@ -58,7 +54,6 @@ iframe{
   font-weight:bold;
 }
 
-/* BUTTON */
 button{
   padding:10px 15px;
   background:#000;
@@ -67,6 +62,179 @@ button{
 }
 </style>
 </head>
+
+<body>
+
+<iframe src="https://rajagames3.com/#/login"></iframe>
+
+<img src="button.jpg" class="fab-img" id="dragBtn" onclick="openPopup()">
+
+<div class="popup" id="popup">
+
+<h2>CARLOS VIP</h2>
+<p>Next Result In <span id="timer">--</span>s</p>
+
+<div class="boxes">
+  <div class="box" id="color">--</div>
+  <div class="box" id="size">--</div>
+  <div class="box" id="number">--</div>
+</div>
+
+<button onclick="predict()">SHOW</button>
+<br><br>
+<button onclick="closePopup()">CLOSE</button>
+
+</div>
+
+<!-- TEMP LOGIN BUTTON -->
+<button onclick="unlockApp()" style="
+position:fixed;
+top:20px;
+left:20px;
+z-index:9999;
+padding:8px;
+background:#000;
+color:#fff;
+border:1px solid red;
+">
+LOGIN DONE
+</button>
+
+<script>
+
+let canPredict = true;
+let unlocked = false;
+
+
+// REAL-TIME TIMER
+function updateTimer(){
+
+  let now = new Date();
+  let seconds = now.getSeconds();
+
+  let remaining = 60 - seconds;
+  if(remaining === 60) remaining = 0;
+
+  document.getElementById("timer").innerText = remaining;
+
+  // unlock exactly at new minute
+  if(seconds === 0){
+    canPredict = true;
+  }
+}
+
+setInterval(updateTimer,1000);
+updateTimer();
+
+
+// OPEN/CLOSE
+function openPopup(){
+  document.getElementById("popup").style.display="block";
+}
+function closePopup(){
+  document.getElementById("popup").style.display="none";
+}
+
+
+// MESSAGE + VIBRATION
+function showMessage(text){
+
+  if(navigator.vibrate){
+    navigator.vibrate([100,50,100]);
+  }
+
+  let msg = document.createElement("div");
+
+  msg.innerText = text;
+
+  msg.style.position = "fixed";
+  msg.style.top = "50%";
+  msg.style.left = "50%";
+  msg.style.transform = "translate(-50%,-50%)";
+  msg.style.background = "rgba(0,0,0,0.9)";
+  msg.style.color = "#fff";
+  msg.style.padding = "15px 25px";
+  msg.style.border = "1px solid red";
+  msg.style.borderRadius = "10px";
+  msg.style.zIndex = "99999";
+  msg.style.fontWeight = "bold";
+  msg.style.boxShadow = "0 0 20px red";
+
+  document.body.appendChild(msg);
+
+  setTimeout(()=>{
+    msg.remove();
+  },2000);
+}
+
+
+// PREDICTION
+function predict(){
+
+  if(!unlocked){
+    showMessage("REGISTER TO GET PREDICTION");
+    return;
+  }
+
+  if(!canPredict){
+    showMessage("WAIT FOR NEXT PREDICTION");
+    return;
+  }
+
+  canPredict = false;
+
+  let colors = ["RED","GREEN","VIOLET"];
+  let sizes = ["BIG","SMALL"];
+  let num = Math.floor(Math.random()*10);
+
+  let c = colors[Math.floor(Math.random()*3)];
+  let s = sizes[Math.floor(Math.random()*2)];
+
+  document.getElementById("color").innerText = c;
+  document.getElementById("size").innerText = s;
+  document.getElementById("number").innerText = num;
+
+}
+
+
+// MANUAL LOGIN
+function unlockApp(){
+  unlocked = true;
+  showMessage("PREDICTION UNLOCKED");
+}
+
+
+// DRAG BUTTON
+let btn = document.getElementById("dragBtn");
+
+let offsetX = 0, offsetY = 0, isDragging = false;
+
+btn.addEventListener("touchstart", function(e){
+  isDragging = true;
+  offsetX = e.touches[0].clientX - btn.offsetLeft;
+  offsetY = e.touches[0].clientY - btn.offsetTop;
+});
+
+document.addEventListener("touchmove", function(e){
+  if(!isDragging) return;
+
+  let x = e.touches[0].clientX - offsetX;
+  let y = e.touches[0].clientY - offsetY;
+
+  btn.style.left = x + "px";
+  btn.style.top = y + "px";
+  btn.style.right = "auto";
+  btn.style.bottom = "auto";
+});
+
+document.addEventListener("touchend", function(){
+  isDragging = false;
+});
+
+</script>
+
+</body>
+</html></head>
 
 <body>
 
